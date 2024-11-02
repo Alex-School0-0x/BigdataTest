@@ -1,6 +1,7 @@
 import kagglehub
 import pandas as pd
 import glob, os, shutil
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 
@@ -35,12 +36,35 @@ def Clear_cache(source_dir, kaggle_data):
 
         # Check if the directory exists before attempting to delete
         if os.path.exists(cache_dir):
-            shutil.rmtree(cache_dir)  # Deletes the entire kagglehub cache directory
+            shutil.rmtree(cache_dir)  # Deletes the original directory
             print(f"Cache cleared at: {cache_dir}")
         else:
             print("The specified cache directory does not exist.")
     else:
         print("No '.cache\\kagglehub' directory found in the path.")
+
+def transform_data(destination_dir):
+    # Load CSV files into pandas DataFrames and perform transformations
+    dataframes = []
+    for csv_file in glob.glob(os.path.join(destination_dir, '*.csv')):
+        df = pd.read_csv(csv_file)
+        # Perform any necessary data cleaning/transformation here
+        dataframes.append(df)
+    return pd.concat(dataframes, ignore_index=True)
+
+def graph_data(data):
+    sns.scatterplot(
+        data,
+        x="Longitude",
+        y="Latitude",
+        size="Magnitude",
+        hue="Depth",
+        style="Type"
+        )
+    plt.legend(title='Day', loc='upper left', bbox_to_anchor=(1, 1))
+    plt.title("Earthquakes")
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
     kaggle_data = "usgs/earthquake-database"
@@ -48,4 +72,5 @@ if __name__ == "__main__":
     source_dir = extract_data(kaggle_data)
     load_data(source_dir, destination_dir)
     Clear_cache(source_dir, kaggle_data)
-    pass
+    data = transform_data(destination_dir)
+    graph_data(data)
