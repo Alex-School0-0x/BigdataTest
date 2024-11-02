@@ -1,6 +1,7 @@
 import kagglehub
 import pandas as pd
 import glob, os, shutil
+import seaborn as sns
 
 
 # Download latest version
@@ -45,4 +46,6 @@ if __name__ == "__main__":
     kaggle_data = "usgs/earthquake-database"
     destination_dir = r".\Data"
     source_dir = extract_data(kaggle_data)
+    load_data(source_dir, destination_dir)
+    Clear_cache(source_dir, kaggle_data)
     pass
